@@ -1837,9 +1837,9 @@
             erro.textContent = MOTIVOS_PEDIDO[r && r.motivo] || 'Não foi possível enviar. Tente de novo.';
           }
         })
-        .withFailureHandler(function () {
+        .withFailureHandler(function (e) {
           btn.disabled = false;
-          erro.textContent = 'Sem conexão. Tente de novo.';
+          erro.textContent = 'Não foi possível enviar (' + String(e && e.message || 'sem conexão').substring(0, 120) + '). Tente de novo.';
         })
         .registrarPedidoMusica(device, artista, musica);
     });
