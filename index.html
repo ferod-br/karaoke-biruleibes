@@ -1767,7 +1767,12 @@
       const item = registro[k];
       if (!item) return;
       if (!nome) { pedirNome(true); return; }
-      if (btn) btn.disabled = true;
+      if (btn) {
+        if (btn.disabled) return;
+        btn.disabled = true;
+        btn.textContent = 'Enviando pedido…';
+        btn.setAttribute('aria-busy', 'true');
+      }
 
       google.script.run
         .withSuccessHandler(function (r) {
@@ -1788,15 +1793,21 @@
     }
 
     function cancelar(id, btn) {
-      if (btn) btn.disabled = true;
+      if (btn) {
+        if (btn.disabled) return;
+        btn.disabled = true;
+        btn.textContent = 'Cancelando…';
+        btn.setAttribute('aria-busy', 'true');
+      }
 
       google.script.run
         .withSuccessHandler(function (r) {
+          if (btn && btn.isConnected) { btn.disabled = false; btn.textContent = 'Cancelar meu pedido'; btn.removeAttribute('aria-busy'); }
           if (r && r.estado) aplicarFila(r.estado);
           toast(r && r.ok ? 'Pedido cancelado.' : (MOTIVOS[r && r.motivo] || 'Não foi possível cancelar.'));
         })
         .withFailureHandler(function () {
-          if (btn) btn.disabled = false;
+          if (btn) { btn.disabled = false; btn.textContent = 'Cancelar meu pedido'; btn.removeAttribute('aria-busy'); }
           toast('Sem conexão. Tente de novo.');
         })
         .cancelarPedido(device, id);
