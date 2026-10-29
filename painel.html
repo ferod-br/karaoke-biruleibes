@@ -1,0 +1,675 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <base target="_top">
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="theme-color" content="#0D0716">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@400;500;600;700&display=swap" rel="stylesheet">
+
+  <style>
+    :root {
+      --bg: #0D0716;
+      --surface: #1A1030;
+      --surface-2: #2A1B4D;
+      --line: #2E2250;
+      --text: #F5F0FF;
+      --muted: #B9AED0;
+      --soft: #C9B8FF;
+      --pink: #FF4FD8;
+      --pink-soft: #FF8AE6;
+      --cyan: #3DF2FF;
+      --tabbar: #130A22;
+    }
+
+    * { box-sizing: border-box; }
+    [hidden] { display: none !important; }
+
+    html { -webkit-text-size-adjust: 100%; }
+
+    body {
+      margin: 0;
+      background: var(--bg);
+      color: var(--text);
+      font-family: 'Outfit', system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif;
+      font-size: 16px;
+      line-height: 1.3;
+      -webkit-tap-highlight-color: transparent;
+    }
+
+    button { font-family: inherit; cursor: pointer; }
+    button:active:not(:disabled) { transform: scale(0.98); }
+    button:disabled { cursor: default; }
+
+    :focus-visible { outline: 3px solid var(--cyan); outline-offset: 2px; }
+
+    .sr { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; }
+
+    .app { max-width: 640px; margin: 0 auto; padding: 0 16px 190px 16px; }
+
+    .header { display: flex; align-items: center; justify-content: space-between; gap: 12px; padding: 16px 0 4px 0; }
+    .titulo { display: flex; align-items: center; gap: 10px; }
+    .titulo h1 { margin: 0; font-size: 22px; font-weight: 700; color: #fff; }
+    .live { display: flex; align-items: center; gap: 6px; font-size: 13px; color: var(--muted); }
+    .dot { width: 8px; height: 8px; border-radius: 50%; background: var(--cyan); }
+    .dot.off { background: var(--pink-soft); }
+
+    /* ---------- Cantando agora ---------- */
+
+    .agora {
+      margin-top: 8px;
+      padding: 14px 16px 16px 16px;
+      border-radius: 20px;
+      background: var(--surface);
+      border: 2px solid var(--pink);
+      display: flex;
+      flex-direction: column;
+      gap: 4px;
+    }
+
+    .agora.vazio { border: 2px dashed var(--line); }
+
+    .label { font-size: 12px; font-weight: 700; letter-spacing: 0.14em; text-transform: uppercase; color: var(--pink-soft); }
+    .agora-linha { font-size: 22px; font-weight: 700; color: #fff; line-height: 1.2; overflow-wrap: anywhere; }
+    .agora-cantor { font-size: 14px; color: var(--muted); }
+    .vazio-txt { font-size: 15px; color: var(--muted); }
+
+    .numero-box {
+      margin-top: 8px;
+      padding: 8px 0 10px 0;
+      border-radius: 14px;
+      border: 1px solid var(--cyan);
+      background: var(--bg);
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+    }
+
+    .numero-box span { font-size: 12px; color: var(--muted); }
+    .numero-box strong { font-size: 56px; font-weight: 700; line-height: 1.05; letter-spacing: 0.04em; color: var(--cyan); font-variant-numeric: tabular-nums; }
+
+    .proxima-previa { margin-top: 6px; font-size: 14px; color: var(--soft); }
+
+    .btn-principal {
+      margin-top: 12px;
+      width: 100%;
+      height: 56px;
+      border: 0;
+      border-radius: 14px;
+      background: var(--pink);
+      color: var(--bg);
+      font-size: 18px;
+      font-weight: 700;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 10px;
+      padding: 0 8px;
+    }
+
+    .btn-principal:disabled { background: var(--surface-2); color: var(--muted); }
+
+    .btn-outline {
+      width: 100%;
+      height: 44px;
+      margin-top: 8px;
+      border: 1px solid #4B3A78;
+      border-radius: 12px;
+      background: transparent;
+      color: var(--text);
+      font-size: 15px;
+      font-weight: 600;
+    }
+
+    .btn-outline:disabled { opacity: 0.5; }
+
+    /* ---------- Fila ---------- */
+
+    .sec-head { margin: 16px 0 6px 0; display: flex; align-items: baseline; justify-content: space-between; gap: 8px; }
+    .sec-head h2 { margin: 0; font-size: 16px; font-weight: 600; color: var(--muted); }
+    .sec-head span { font-size: 12px; color: var(--muted); }
+
+    .list { display: flex; flex-direction: column; gap: 8px; margin: 0; padding: 0; list-style: none; }
+
+    .item { padding: 10px 10px 10px 14px; border-radius: 14px; background: var(--surface); display: flex; flex-direction: column; gap: 8px; }
+    .item-top { display: flex; align-items: center; gap: 10px; }
+    .item-info { flex: 1; min-width: 0; display: flex; flex-direction: column; gap: 1px; }
+    .item-nome { font-size: 16px; font-weight: 700; color: #fff; line-height: 1.2; }
+    .item-vez { font-weight: 500; color: var(--soft); font-size: 13px; }
+    .item-musica { font-size: 15px; overflow-wrap: anywhere; }
+    .item-cantor { font-size: 13px; color: var(--muted); }
+    .item-num { flex: none; font-size: 20px; font-weight: 700; color: var(--cyan); font-variant-numeric: tabular-nums; }
+
+    .item-acoes { display: flex; gap: 6px; }
+
+    .mini {
+      flex: 1;
+      min-height: 44px;
+      padding: 0 6px;
+      border: 1px solid var(--line);
+      border-radius: 10px;
+      background: transparent;
+      color: var(--text);
+      font-size: 14px;
+      font-weight: 600;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 6px;
+    }
+
+    .mini.rm { color: var(--pink-soft); }
+    .mini:disabled { opacity: 0.45; }
+
+    .vazio-fila { padding: 28px 12px; text-align: center; color: var(--muted); font-size: 15px; border: 2px dashed var(--line); border-radius: 14px; }
+
+    /* ---------- Rodapé fixo ---------- */
+
+    .rodape {
+      position: fixed;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      z-index: 40;
+      background: var(--tabbar);
+      border-top: 1px solid var(--line);
+      padding: 12px 16px calc(14px + env(safe-area-inset-bottom)) 16px;
+    }
+
+    .rodape-in { max-width: 640px; margin: 0 auto; display: flex; flex-direction: column; gap: 10px; }
+
+    .ir-linha { display: flex; align-items: center; justify-content: space-between; gap: 12px; }
+    .ir-linha strong { display: block; font-size: 15px; font-weight: 600; color: var(--muted); }
+    .ir-linha span.sub { font-size: 12px; color: var(--muted); }
+
+    .toggle { flex: none; width: 48px; height: 28px; border-radius: 14px; background: var(--line); position: relative; }
+    .toggle::after { content: ''; position: absolute; left: 3px; top: 3px; width: 22px; height: 22px; border-radius: 50%; background: #8F83AB; }
+
+    /* ---------- Catálogo: atualizações exibidas no app ---------- */
+
+    .catalogo { margin-top: 22px; background: var(--surface); border-radius: 16px; }
+    .catalogo > summary {
+      list-style: none; cursor: pointer; padding: 14px 16px;
+      display: flex; align-items: center; justify-content: space-between; gap: 10px;
+      font-size: 16px; font-weight: 600; color: var(--text);
+    }
+    .catalogo > summary::-webkit-details-marker { display: none; }
+    .catalogo > summary .resumo { margin-left: auto; text-align: right; font-size: 13px; font-weight: 500; color: var(--muted); }
+    .catalogo > summary .seta { flex: none; width: 9px; height: 9px; margin: -4px 4px 0 0; border-right: 2px solid var(--muted); border-bottom: 2px solid var(--muted); transform: rotate(45deg); transition: transform .15s; }
+    .catalogo[open] > summary .seta { transform: rotate(225deg); margin-top: 4px; }
+    .cat-corpo { padding: 0 16px 16px 16px; display: flex; flex-direction: column; gap: 12px; }
+    .cat-corpo p { margin: 0; font-size: 13px; color: var(--muted); line-height: 1.4; }
+
+    .atts { display: grid; grid-template-columns: repeat(auto-fill, minmax(140px, 1fr)); gap: 8px; }
+    .att {
+      min-height: 52px; padding: 8px 10px; border-radius: 12px; border: 2px solid var(--cyan);
+      background: transparent; color: var(--text); text-align: left;
+      display: flex; align-items: center; gap: 8px; font-size: 14px; font-weight: 700; white-space: nowrap;
+    }
+    .att small { display: block; font-size: 11.5px; font-weight: 500; color: var(--muted); }
+    .att .ico { flex: none; width: 22px; height: 22px; border-radius: 50%; display: grid; place-items: center; background: var(--cyan); color: #0D0716; }
+    .att.off { border-color: var(--line); color: var(--muted); }
+    .att.off .ico { background: var(--line); color: var(--muted); }
+    .att.off b { text-decoration: line-through; text-decoration-thickness: 2px; }
+    .att:disabled { opacity: .6; }
+
+    .btn-atualiza {
+      height: 48px;
+      border: 2px solid var(--line);
+      border-radius: 14px;
+      background: transparent;
+      color: var(--text, #fff);
+      font-size: 15px;
+      font-weight: 600;
+    }
+    .btn-atualiza:disabled { opacity: .6; }
+
+    .btn-nova {
+      height: 48px;
+      border: 2px solid var(--pink-soft);
+      border-radius: 14px;
+      background: transparent;
+      color: var(--pink-soft);
+      font-size: 15px;
+      font-weight: 700;
+    }
+
+    /* ---------- Toast e confirmação ---------- */
+
+    .toast {
+      position: fixed;
+      z-index: 60;
+      left: 50%;
+      bottom: calc(170px + env(safe-area-inset-bottom));
+      transform: translateX(-50%);
+      width: calc(100% - 32px);
+      max-width: 420px;
+      padding: 12px 16px;
+      border-radius: 14px;
+      background: var(--surface-2);
+      border: 1px solid var(--cyan);
+      color: #fff;
+      font-size: 15px;
+      box-shadow: 0 8px 24px rgba(0, 0, 0, 0.5);
+    }
+
+    .modal {
+      position: fixed;
+      inset: 0;
+      z-index: 100;
+      background: rgba(8, 3, 16, 0.92);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 24px 20px;
+    }
+
+    .modal-card {
+      width: 100%;
+      max-width: 420px;
+      padding: 24px 20px 20px 20px;
+      border-radius: 20px;
+      background: var(--surface);
+      border: 1px solid var(--line);
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+    }
+
+    .modal-card h2 { margin: 0; font-size: 22px; color: #fff; }
+    .modal-card p { margin: 0; font-size: 15px; color: var(--muted); }
+    .modal-card .row { display: flex; gap: 8px; margin-top: 6px; }
+    .modal-card .row button { flex: 1; min-height: 52px; border-radius: 14px; font-size: 16px; font-weight: 700; }
+    .modal-card .cancela { border: 2px solid var(--line); background: transparent; color: var(--text); }
+    .modal-card .confirma { border: 0; background: var(--pink); color: var(--bg); }
+
+    @media (prefers-reduced-motion: reduce) {
+      * { animation: none !important; transition: none !important; }
+    }
+  </style>
+</head>
+
+<body>
+  <div class="app">
+
+    <header class="header">
+      <div>
+        <div class="titulo">
+          <svg aria-hidden="true" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#FF8AE6" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="3" width="6" height="11" rx="3"/><path d="M5 11a7 7 0 0 0 14 0M12 18v3"/></svg>
+          <h1>Painel do anfitrião</h1>
+        </div>
+        <div class="live"><span class="dot" id="dot" aria-hidden="true"></span><span id="status">Carregando…</span></div>
+      </div>
+    </header>
+
+    <div id="agora"></div>
+    <div id="acoes"></div>
+
+    <div class="sec-head">
+      <h2 id="tituloFila">Próximas</h2>
+      <span>Ordem automática · você pode mover</span>
+    </div>
+
+    <div id="fila"></div>
+
+    <details class="catalogo" id="catalogo">
+      <summary>
+        <span>Catálogo de músicas</span>
+        <span class="resumo" id="catResumo">Carregando…</span>
+        <span class="seta" aria-hidden="true"></span>
+      </summary>
+      <div class="cat-corpo">
+        <p>Escolha quais atualizações aparecem no app de busca. Toque numa atualização para ocultar ou mostrar. As músicas ocultas continuam na planilha.</p>
+        <div class="atts" id="atts" role="group" aria-label="Atualizações exibidas no app"></div>
+        <button type="button" class="btn-atualiza" id="btnCatalogo">Atualizar catálogo de músicas</button>
+        <p>Use esse botão depois de mudar a planilha (músicas novas ou gêneros) para o app já mostrar as mudanças.</p>
+      </div>
+    </details>
+  </div>
+
+  <div class="rodape">
+    <div class="rodape-in">
+      <div class="ir-linha">
+        <div>
+          <strong>Enviar ao karaokê por infravermelho</strong>
+          <span class="sub">Em breve · exige o módulo ESP32</span>
+        </div>
+        <div class="toggle" role="img" aria-label="Desativado, em breve"></div>
+      </div>
+      <button type="button" class="btn-nova" id="btnNova">Nova noite</button>
+    </div>
+  </div>
+
+  <div class="toast" id="toast" role="status" aria-live="polite" hidden></div>
+
+  <div class="modal" id="modalNova" role="dialog" aria-modal="true" aria-labelledby="tNova" hidden>
+    <div class="modal-card">
+      <h2 id="tNova">Começar uma nova noite?</h2>
+      <p>A fila e a contagem de quem já cantou serão zeradas. O histórico continua salvo na aba "Fila" da planilha.</p>
+      <div class="row">
+        <button type="button" class="cancela" id="btnNovaNao">Cancelar</button>
+        <button type="button" class="confirma" id="btnNovaSim">Zerar tudo</button>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    /* Quando a página roda fora do Apps Script (ex.: GitHub Pages), google.script.run
+       é simulado e chama o Apps Script pelo endereço abaixo. */
+    var API_URL = 'COLE_AQUI_O_ENDERECO_EXEC_DO_APPS_SCRIPT';
+    if (!(window.google && window.google.script && window.google.script.run)) {
+      (function () {
+        function mk(ok, falha) {
+          return new Proxy({}, {
+            get: function (_, nome) {
+              if (nome === 'withSuccessHandler') return function (fn) { return mk(fn, falha); };
+              if (nome === 'withFailureHandler') return function (fn) { return mk(ok, fn); };
+              return function () {
+                var args = Array.prototype.slice.call(arguments);
+                fetch(API_URL, { method: 'POST', headers: { 'Content-Type': 'text/plain;charset=utf-8' }, body: JSON.stringify({ fn: nome, args: args }) })
+                  .then(function (r) { return r.json(); })
+                  .then(function (j) {
+                    if (!j.ok) throw new Error(j.erro || 'erro');
+                    if (ok) ok(j.r);
+                  })
+                  .catch(function (e) { if (falha) falha({ message: String(e && e.message || e) }); });
+              };
+            }
+          });
+        }
+        window.google = { script: { run: mk(null, null) } };
+      })();
+    }
+  </script>
+  <script>
+    'use strict';
+
+    const $ = id => document.getElementById(id);
+
+    function esc(s) {
+      return String(s === null || s === undefined ? '' : s).replace(/[&<>"']/g, function (c) {
+        return { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c];
+      });
+    }
+
+    const ICO_AVANCAR = '<svg aria-hidden="true" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 5l9 7-9 7zM19 5v14"/></svg>';
+    const ICO_CIMA = '<svg aria-hidden="true" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 19V5M5 12l7-7 7 7"/></svg>';
+    const ICO_BAIXO = '<svg aria-hidden="true" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 5v14M5 12l7 7 7-7"/></svg>';
+    const ICO_X = '<svg aria-hidden="true" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M6 6l12 12M18 6L6 18"/></svg>';
+
+    let dados = null;       // última resposta da fila
+    let versao = null;
+    let ocupado = false;    // há uma ação em andamento
+    let pollando = false;
+    let offline = false;
+    let ultima = 0;
+    let pollTimer = null;
+    let toastTimer = null;
+
+    function versaoNum(v) { return parseInt(String(v || '').split('-')[0], 10) || 0; }
+
+    function toast(msg) {
+      const t = $('toast');
+      t.textContent = msg;
+      t.hidden = false;
+      clearTimeout(toastTimer);
+      toastTimer = setTimeout(function () { t.hidden = true; }, 4000);
+    }
+
+    function aplicar(r) {
+      if (!r || r.mesmo) return;
+      if (dados && versaoNum(r.versao) < versaoNum(versao)) return; // resposta atrasada
+      dados = r;
+      versao = r.versao;
+      render();
+    }
+
+    function statusTexto() {
+      $('dot').classList.toggle('off', offline);
+      if (offline) { $('status').textContent = 'Sem conexão. Tentando de novo…'; return; }
+      if (!ultima) { $('status').textContent = 'Carregando…'; return; }
+      const s = Math.max(0, Math.round((Date.now() - ultima) / 1000));
+      $('status').textContent = s < 3 ? 'Atualizado agora' : 'Atualizado há ' + s + ' s';
+    }
+
+    function render() {
+      if (!dados) return;
+      const d = dados;
+
+      // Cantando agora
+      let html;
+      if (d.agora) {
+        html = '<div class="agora"><span class="label">Cantando agora</span>' +
+          '<span class="agora-linha">' + esc(d.agora.pessoa) + ' · ' + esc(d.agora.musica) + '</span>' +
+          '<span class="agora-cantor">' + esc(d.agora.cantor) + '</span>' +
+          '<div class="numero-box"><span>Digite no controle</span><strong>' + esc(d.agora.numero || '–') + '</strong></div></div>';
+      } else {
+        html = '<div class="agora vazio"><span class="label">Cantando agora</span>' +
+          '<span class="vazio-txt">Ninguém cantando.</span>' +
+          (d.fila.length
+            ? '<span class="proxima-previa">Próxima: ' + esc(d.fila[0].pessoa) + ' · ' + esc(d.fila[0].musica) + ' · Nº ' + esc(d.fila[0].numero || '–') + '</span>'
+            : '<span class="vazio-txt">Quando alguém pedir uma música, ela aparece aqui.</span>') +
+          '</div>';
+      }
+      $('agora').innerHTML = html;
+
+      // Botões principais
+      let rotulo;
+      if (d.agora && d.fila.length) rotulo = 'Cantou · Chamar próxima';
+      else if (d.agora) rotulo = 'Cantou';
+      else rotulo = 'Chamar primeira música';
+
+      const podeAvancar = !!(d.agora || d.fila.length);
+      $('acoes').innerHTML =
+        '<button type="button" class="btn-principal" data-act="avancar"' + ((!podeAvancar || ocupado) ? ' disabled' : '') + '>' +
+        ICO_AVANCAR + esc(rotulo) + '</button>' +
+        (d.agora ? '<button type="button" class="btn-outline" data-act="pular"' + (ocupado ? ' disabled' : '') + '>Pular (não conta como cantada)</button>' : '');
+
+      // Fila
+      $('tituloFila').textContent = 'Próximas (' + d.fila.length + ')';
+
+      if (!d.fila.length) {
+        $('fila').innerHTML = '<div class="vazio-fila">A fila está vazia.</div>';
+        return;
+      }
+
+      let lista = '<ul class="list">';
+      d.fila.forEach(function (p, i) {
+        const dis = ocupado ? ' disabled' : '';
+        lista += '<li class="item">' +
+          '<div class="item-top">' +
+            '<div class="item-info">' +
+              '<span class="item-nome">' + p.pos + '. ' + esc(p.pessoa) + ' <span class="item-vez">· ' + p.vez + 'ª música</span></span>' +
+              '<span class="item-musica">' + esc(p.musica) + '</span>' +
+              '<span class="item-cantor">' + esc(p.cantor) + '</span>' +
+            '</div>' +
+            '<span class="item-num"><span class="sr">Número </span>' + esc(p.numero || '–') + '</span>' +
+          '</div>' +
+          '<div class="item-acoes">' +
+            '<button type="button" class="mini" data-act="topo" data-id="' + esc(p.id) + '"' + (i === 0 ? ' disabled' : dis) + ' aria-label="Passar ' + esc(p.pessoa) + ' para primeiro">' + ICO_CIMA + 'Primeiro</button>' +
+            '<button type="button" class="mini" data-act="fim" data-id="' + esc(p.id) + '"' + (i === d.fila.length - 1 ? ' disabled' : dis) + ' aria-label="Mandar ' + esc(p.pessoa) + ' para o fim">' + ICO_BAIXO + 'Último</button>' +
+            '<button type="button" class="mini rm" data-act="remover" data-id="' + esc(p.id) + '"' + dis + ' aria-label="Remover ' + esc(p.pessoa) + ' da fila">' + ICO_X + 'Remover</button>' +
+          '</div></li>';
+      });
+      lista += '</ul>';
+      $('fila').innerHTML = lista;
+    }
+
+    /* ---------- Chamadas ao servidor ---------- */
+
+    function executar(chamada, msgOk) {
+      if (ocupado) return;
+      ocupado = true;
+      render();
+
+      chamada(
+        function (r) {
+          ocupado = false;
+          if (r && r.estado) { ultima = Date.now(); aplicar(r.estado); }
+          if (r && !r.ok) {
+            toast(r.motivo === 'desatualizado'
+              ? 'A fila mudou enquanto você tocava. Confira e tente de novo.'
+              : 'Não foi possível concluir. Tente de novo.');
+          } else if (msgOk) {
+            toast(msgOk);
+          }
+          render();
+          statusTexto();
+        },
+        function () {
+          ocupado = false;
+          toast('Sem conexão. Tente de novo.');
+          render();
+        }
+      );
+    }
+
+    function avancar(statusFinal) {
+      const idEsperado = dados && dados.agora ? dados.agora.id : '';
+      executar(function (ok, falha) {
+        google.script.run.withSuccessHandler(ok).withFailureHandler(falha).hostAvancar(idEsperado, statusFinal);
+      });
+    }
+
+    document.addEventListener('click', function (e) {
+      const b = e.target.closest('[data-act]');
+      if (!b || b.disabled) return;
+
+      switch (b.dataset.act) {
+        case 'avancar': avancar('cantada'); break;
+        case 'pular': avancar('pulada'); break;
+        case 'topo':
+          executar(function (ok, falha) { google.script.run.withSuccessHandler(ok).withFailureHandler(falha).hostPrioridade(b.dataset.id, 'topo'); });
+          break;
+        case 'fim':
+          executar(function (ok, falha) { google.script.run.withSuccessHandler(ok).withFailureHandler(falha).hostPrioridade(b.dataset.id, 'fim'); });
+          break;
+        case 'remover':
+          executar(function (ok, falha) { google.script.run.withSuccessHandler(ok).withFailureHandler(falha).hostRemover(b.dataset.id); }, 'Removida da fila.');
+          break;
+        default: break;
+      }
+    });
+
+    $('btnNova').addEventListener('click', function () { $('modalNova').hidden = false; $('btnNovaNao').focus(); });
+    $('btnNovaNao').addEventListener('click', function () { $('modalNova').hidden = true; });
+    $('btnNovaSim').addEventListener('click', function () {
+      $('modalNova').hidden = true;
+      executar(function (ok, falha) { google.script.run.withSuccessHandler(ok).withFailureHandler(falha).hostNovaNoite(); }, 'Nova noite iniciada.');
+    });
+
+    $('btnCatalogo').addEventListener('click', function () {
+      const b = $('btnCatalogo');
+      if (b.disabled) return;
+      b.disabled = true;
+      b.textContent = 'Atualizando…';
+      function fim() { b.disabled = false; b.textContent = 'Atualizar catálogo de músicas'; }
+      google.script.run
+        .withSuccessHandler(function (r) {
+          fim();
+          toast(r && r.ok ? 'Catálogo atualizado (' + r.total + ' músicas).' : 'Não foi possível atualizar. Tente de novo.');
+          carregarAtts();
+        })
+        .withFailureHandler(function () { fim(); toast('Sem conexão. Tente de novo.'); })
+        .hostAtualizarCatalogo();
+    });
+
+    document.addEventListener('keydown', function (e) {
+      if (e.key === 'Escape') $('modalNova').hidden = true;
+    });
+
+    /* ---------- Atualização automática ---------- */
+
+    function poll(cb) {
+      if (pollando || ocupado) { if (cb) cb(); return; }
+      pollando = true;
+
+      google.script.run
+        .withSuccessHandler(function (r) {
+          pollando = false;
+          offline = false;
+          ultima = Date.now();
+          aplicar(r);
+          statusTexto();
+          if (cb) cb();
+        })
+        .withFailureHandler(function () {
+          pollando = false;
+          offline = true;
+          statusTexto();
+          if (cb) cb();
+        })
+        .obterFila(versao, '');
+    }
+
+    function agendar() {
+      clearTimeout(pollTimer);
+      pollTimer = setTimeout(function () {
+        if (document.visibilityState === 'hidden') { agendar(); return; }
+        poll(agendar);
+      }, 5000);
+    }
+
+    document.addEventListener('visibilitychange', function () {
+      if (document.visibilityState === 'visible') poll(agendar);
+    });
+
+    setInterval(statusTexto, 1000);
+
+    /* ---------- Atualizações exibidas no app ---------- */
+
+    const ICO_OK = '<svg aria-hidden="true" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3.2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12l5 5 9-10"/></svg>';
+    const ICO_OFF = '<svg aria-hidden="true" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3.2" stroke-linecap="round"><path d="M6 6l12 12M18 6L6 18"/></svg>';
+    let salvandoAtt = false;
+
+    function renderAtts(r) {
+      if (!r || !r.ok) { $('catResumo').textContent = 'Indisponível'; return; }
+      $('catResumo').textContent = r.ocultas
+        ? r.ocultas + (r.ocultas === 1 ? ' atualização oculta' : ' atualizações ocultas')
+        : 'Tudo visível';
+      $('atts').innerHTML = r.atts.map(function (a) {
+        return '<button type="button" class="att' + (a.oculta ? ' off' : '') + '" data-att="' + esc(a.att) + '" data-oculta="' + (a.oculta ? '1' : '0') + '"' +
+          ' aria-pressed="' + (a.oculta ? 'false' : 'true') + '"' + (salvandoAtt ? ' disabled' : '') + '>' +
+          '<span class="ico">' + (a.oculta ? ICO_OFF : ICO_OK) + '</span>' +
+          '<span><b>Atualização ' + esc(a.att) + '</b><small>' + a.total + ' músicas · ' + (a.oculta ? 'oculta' : 'visível') + '</small></span>' +
+          '</button>';
+      }).join('');
+    }
+
+    function carregarAtts() {
+      google.script.run
+        .withSuccessHandler(renderAtts)
+        .withFailureHandler(function () { $('catResumo').textContent = 'Sem conexão'; })
+        .hostListarAtualizacoes();
+    }
+
+    $('atts').addEventListener('click', function (e) {
+      const b = e.target.closest('.att');
+      if (!b || salvandoAtt) return;
+      const att = b.dataset.att;
+      const mostrar = b.dataset.oculta === '1';   // estava oculta -> passa a mostrar
+      salvandoAtt = true;
+      Array.prototype.forEach.call($('atts').querySelectorAll('.att'), function (x) { x.disabled = true; });
+      google.script.run
+        .withSuccessHandler(function (r) {
+          salvandoAtt = false;
+          renderAtts(r);
+          toast(r && r.ok
+            ? (mostrar ? 'Atualização ' + att + ' visível no app.' : 'Atualização ' + att + ' oculta no app.')
+            : 'Não foi possível salvar. Tente de novo.');
+        })
+        .withFailureHandler(function () {
+          salvandoAtt = false;
+          carregarAtts();
+          toast('Sem conexão. Tente de novo.');
+        })
+        .hostDefinirAtualizacao(att, mostrar);
+    });
+
+    carregarAtts();
+    poll(agendar);
+  </script>
+</body>
+</html>
